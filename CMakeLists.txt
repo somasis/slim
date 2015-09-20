@@ -71,7 +71,9 @@ set(common_srcs
 if(USE_PAM)
 	set(common_srcs ${common_srcs} PAM.cpp)
     # for now, only build slimlock if we are using PAM.
-    set(BUILD_SLIMLOCK 1)
+	if(BUILD_SLIMLOCK)
+		set(BUILD_SLIMLOCK 1)
+	endif(BUILD_SLIMLOCK)
 endif(USE_PAM)
 
 # Build common library
@@ -119,9 +121,11 @@ if(USE_PAM)
 	if(PAM_FOUND)
 		message("\tPAM Found")
 		set(SLIM_DEFINITIONS ${SLIM_DEFINITIONS} "-DUSE_PAM")
-		target_link_libraries(libslim ${PAM_LIBRARY})
 		target_link_libraries(${PROJECT_NAME} ${PAM_LIBRARY})
-		target_link_libraries(slimlock ${PAM_LIBRARY})
+		if(BUILD_SLIMLOCK)
+			target_link_libraries(slimlock ${PAM_LIBRARY})
+		endif(BUILD_SLIMLOCK)
+		target_link_libraries(libslim ${PAM_LIBRARY})
 		include_directories(${PAM_INCLUDE_DIR})
 	else(PAM_FOUND)
 		message("\tPAM Not Found")
@@ -224,7 +228,9 @@ endif(BUILD_SLIMLOCK)
 ####### install
 # slim
 install(TARGETS slim RUNTIME DESTINATION bin)
-install(TARGETS slimlock RUNTIME DESTINATION bin)
+if(BUILD_SLIMLOCK)
+	install(TARGETS slimlock RUNTIME DESTINATION bin)
+endif(BUILD_SLIMLOCK)
 
 if (BUILD_SHARED_LIBS)
 	set_target_properties(libslim PROPERTIES
@@ -239,7 +245,9 @@ endif (BUILD_SHARED_LIBS)
 
 # man file
 install(FILES slim.1 DESTINATION ${MANDIR}/man1/)
-install(FILES slimlock.1 DESTINATION ${MANDIR}/man1/)
+if(BUILD_SLIMLOCK)
+	install(FILES slimlock.1 DESTINATION ${MANDIR}/man1/)
+endif(BUILD_SLIMLOCK)
 # configure
 install(FILES slim.conf DESTINATION ${SYSCONFDIR})
 # systemd service file
