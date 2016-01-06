@@ -23,10 +23,7 @@
 #include <signal.h>
 #include <iostream>
 #include <string>
-
-#ifdef NEEDS_BASENAME
 #include <libgen.h>
-#endif
 
 #include "switchuser.h"
 #include "log.h"
